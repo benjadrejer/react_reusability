@@ -20,6 +20,10 @@ h1 {
   padding: 15px 0;
 }
 
+p:not(.reusability-guide__intro) {
+  text-indent: 15px;
+}
+
 a {
   padding: 2px 0;
   display: inline-block;

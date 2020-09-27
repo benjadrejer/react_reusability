@@ -208,15 +208,17 @@
         Obvious use-cases would be for grid of items, the Grid typographic components holding the styling to line a list of items up in a grid.
         Or a Box component that provides some very specific width & height styling for the component being wrapped.<br>
         By extension, a reusable components root container should not declare any of the following styles:<br>
-        margin,<br>
-        width,<br>
-        position,<br>
-        top,<br>
-        left,<br>
-        right,<br>
-        bottom,<br>
-        transform,<br>
-        display<br>
+        <ul>
+          <li>margin</li>
+          <li>width</li>
+          <li>position</li>
+          <li>top</li>
+          <li>left</li>
+          <li>right</li>
+          <li>bottom</li>
+          <li>transform</li>
+          <li>display</li>
+        </ul>
         As doing so pretty much destroys reusability - the component can no longer be 'put anywhere', but only 'put where the styling fits'.<br>
         Instead they can be wrapped by a typographic component that decides what size & position the component should have in the given context.<br>
       </p>
@@ -227,9 +229,11 @@
         evolving, renewing and implementing new features, it can be an absolute disaster. There is nothing worse than fighting some
         global styling when building a component, trying to beat the global stylings specificity or even adding !important.<br>
         As such, global styling should be kept to the bare minimum:<br>
-        Browser normalizing (removing default body margin etc.)<br>
-        Box sizing<br>
-        Fonts<br>
+        <ul>
+          <li>Browser normalizing (removing default body margin etc.)</li>
+          <li>Box sizing</li>
+          <li>Fonts</li>
+        </ul>
         Anything else will most likely end up conflicting with something, at some point, and it can also end up being quite a quest
         for a developer to attempt to clean up or refactor a bunch of global styling that could be potentially be used anywhere on the whole site.<br>
       </p>
