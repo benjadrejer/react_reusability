@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reusability Guide</title>
+  <link rel="stylesheet" href="./style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="reusability-guide">
+    <h1>Reusability Guide for React / Frontend Development</h1>
+    <p class="reusability-guide__intro">
+      Considerations & musings on how to increase reusability on a primarily React-based frontend environment.
+      Most of these points could also be applied to other frontend frameworks or vanilla JS.
+      Also includes optimizations on CSS and more team & developer-oriented points.
+      Some of the points might not be directly related to reusability, but are nevertheless good to remember when
+      creating reusable components & code.
+      Several of the points presented here are certainly very hard to implement and follow properly, but being aware of
+      them is the first step to succeed, and it is without a doubt a process.
+      I hope this will turn out to be useful, and I hope to be able to improve & expand this guide in the future!
+      <blockquote>- Benjamin Drejer</blockquote>
+    </p>
+    <div class="reusability-guide__index">
+      <h4>Team/Developer Considerations</h4>
+      <ol>
+        <li><a href="#shared-space">Have a shared space for building components (repository/folder)</a></li>
+        <li><a href="#storybook">Consider using Storybook for isolated component development</a></li>
+        <li><a href="#more-not-less">more 'identical' reusable components > less non-reusable components</a></li>
+        <li><a href="#awareness">Make other developers aware of new additions</a></li>
+      </ol>
+      <h4>React & Typing</h4>
+      <ol>
+        <li><a href="#hooks">Use hooks</a></li>
+        <li><a href="#custom-hooks">Consider when stateful logic can be extracted into custom hooks</a></li>
+        <li><a href="#memo">If a component accepts props, wrap in React.memo</a></li>
+        <li><a href="#typing">Use Typescript, or at least PropTypes</a></li>
+        <li><a href="#redux">Use Redux sparingly</a></li>
+      </ol>
+      <h4>Component Structure</h4>
+      <ol>
+        <li><a href="#prefer-small">Consider the smallest possible component for what you intend to build</a></li>
+        <li><a href="#prefer-generic">Make components as generic as possible</a></li>
+        <li><a href="#typography-components">Typography Components</a></li>
+      </ol>
+      <h4>CSS & Styling</h4>
+      <ol>
+        <li><a href="#global-styles">Global Styles</a></li>
+        <li><a href="#styleguide">Have a styleguide</a></li>
+        <li><a href="#wrappers">Don't declare positioning styles inside a component - make wrappers</a></li>
+        <li><a href="#scoping">SCSS Scoping</a></li>
+        <li><a href="#mixins">Use mixins</a></li>
+        <li><a href="#modules">Use CSS Modules or Styled Components</a></li>
+        <li><a href="#classnames">ClassNames package</a></li>
+      </ol>
+      <h4>Common Reusable Components</h4>
+      <ol>
+        <li><a href="#common-components">List of common reusable components</a></li>
+        <li><a href="#loader">Loader</a></li>
+        <li><a href="#dropdown">Dropdown</a></li>
+        <li><a href="#accordion">Accordion</a></li>
+        <li><a href="#search">Search</a></li>
+        <li><a href="#collapsible">Collapsible</a></li>
+        <li><a href="#range-slider">Range Slider</a></li>
+        <li><a href="#card">Box/Card</a></li>
+        <li><a href="#checkbox">Checkbox</a></li>
+        <li><a href="#carousel">Carousel</a></li>
+        <li><a href="#image">Image</a></li>
+        <li><a href="#avatar">Avatar</a></li>
+        <li><a href="#chart">Chart</a></li>
+      </ol>
+    </div>
+    <div class="reusability-guide__content">
+      <h3>Team/Developer Considerations</h3>
+      <h5 id="shared-space">Shared Space</h5>
+      <p>
+        It perhaps goes without saying, but in a company structure with several or dozens of developers working together,
+        if the goal is to collaborate on code - and and by extension, re-use components -, having a shared space to work & interact is a big help.
+        This could either be a single repository with all the company code, or at the very least a shared repository for components.<br>
+        The second option is a bit more cumbersome in that such components would need to be copied to the other actual site repositories,
+        so a kind of component versioning would be needed.<br>
+      </p>
+      <h5 id="storybook">Storybook</h5>
+      <p>
+        <a href="https://github.com/storybookjs/storybook">Storybook Github</a>
+        Storybook provides a canvas outside of the actual application, in which components can be built and shown off to any interested parties.<br>
+        It being isolated, it helps the developer to develop components that do not depend on any outside sources for functionality or style.<br>
+        As components should generally not be built with specific sizes in mind (more on that later), it's very common to wrap the components
+        shown inside storybook in wrapper elements (also more on that) giving a specific width / positioning purely to have it display nicely in storybook.<br>
+        Storybook has a lot of addons, but by fair the most useful & recommended are the Knobs & Viewport addons, enabling 'mock-props' to be dynamically passed
+        to the component inside storybook, as well as providing responsive views.<br>
+        Storybook is highly recommended for any React-team that wants to focus strongly on reusability of components and shared libraries.<br>
+      </p>
+      <h5 id="more-not-less">Duplicates is fine</h5>
+      <p>
+        Generally, if you have several teams working separately, ideally proper communication would flow between the teams.<br>
+        But this is not always the case, and if 2 teams both end up with a reusable component that is made to solve the same issue,
+        it might not be a bad thing! They can be compared and refactored, and the end result might very well be an even cleaner component.<br>
+        It's certainly better that both teams attempt the reusable route, instead of just cobbling something together quickly, and ending up
+        with 2 components that solve the same issue but cannot be ported.<br>
+      </p>
+      <h5 id="awareness">Awareness</h5>
+      <p>
+        This point is simply one of communication. Many developers can have a tendency to sit in their own bubble and code away.<br>
+        While this is certainly productive, it might not be the best practice in a team, or particularly in a multi-team environment.<br>
+        Other members should be made aware of what is being worked on. This is often done through daily syncs/standups and/or task management systems,
+        but there is also a lot of value in just talking and communication in-person or through apps like slack, regularly.<br>
+      </p>
+      <h3>React & Typing</h3>
+      <h5 id="hooks">Hooks</h5>
+      <p>
+        React Hooks are a relatively new thing, but quite popular and highly recommended to use. They have proved to be slightly more efficient
+        than class-based components in terms of size & rendering speed, but the main arguments for using hooks would be be the following:
+        <ul>
+          <li>Components don't need all the scaffolding of a class-based component, they can be much smaller and efficient</li>
+          <li>You have the possibility to extract pieces of state into reusable custom hooks</li>
+          <li>You have most of the component lifecycle methods in a single hook - useEffect</li>
+        </ul>
+        Hooks also help to make the developer very conscious of any state to be added. If useState calls get to 3+, it's a strong sign
+        that there is probably some logic that can be made into a separate component or custom hook. We want components to be as small
+        and mobile as possible.<br>
+        As 'root' components in an application (assuming no Redux), class-based components can still have some merit simply due to the
+        amount of state they might need to keep track of.
+      </p>
+      <h5 id="custom-hooks">Custom Hooks</h5>
+      <p>
+        While creating new components is useful for avoiding duplicate JSX, Custom Hooks help avoiding duplicate logic.<br>
+        Certainly, defining where a Custom Hook makes sense is not the easiest thing in the world, but there is a few pointers that
+        can be used:
+        <ul>
+          <li>
+            Data Fetching is usually a prime-candidate for a Custom Hook
+            1 Custom Hook can perhaps even take care of all the data-fetching needs for a while site/application.<br>
+            Certainly, not all data fits out of the box, so having some intermediary functions to transform that data
+            into what the component needs might be necessary - but all the requesting & fetching can be done in the hook.
+          </li>
+          <li>
+            To determine whether something makes sense as a Custom Hook, look at all the logic located above the JSX in a component and
+            try to identify which logic is tightly related. This is usually some state as well as some useEffect (lifecycle) logic.
+            If this can be decoupled from the rest of the logic (which would in any case be preferable), it can be a Custom Hook.
+          </li>
+        </ul>
+      </p>
+      <h5 id="memo">React.memo</h5>
+      <p>
+        React components re-render every time state & props change - even if the new value is in fact identical to the old.<br>
+        As such, it's good practice to wrap every component that accepts props in React.memo, which will memoize the prop values
+        and only cause a re-render when the new prop values are different from the old.<br>
+        React.memo does not memoize state (as opposed to the class-based PureComponent), but it is extraordinarily rare to cause
+        state updates with no actual changes, so I would not consider this a great loss.<br>
+      </p>
+      <h5 id="typing">Typing</h5>
+      <p>
+        React has generally 2 options for providing typing help for the developers, which I believe helps built reusable.
+        <ul>
+          <li>
+            <a href="https://www.typescriptlang.org/">Typescript</a>
+            Typescript helps components conform to certain interfaces, and type-checks any props and state.
+            It has a much higher learning curve than PropTypes, but the potential benefit is also much greater.
+            Typescript also enables the use of enums, generics, tuples, interfaces, which are not usually features of JS.
+            It perhaps makes development more time intensive, but in the end I believe it makes for better Javascript developers.
+          </li>
+          <li>
+            <a href="https://github.com/facebook/prop-types">PropTypes</a>
+            PropTypes is a simple solution that provides type-checking for props passed into components.
+            The developer describes what types the props provided are supposed to conform to, and other developers making
+            use of said component will have an easier time telling what it expects and by extension what it does.
+            That's really all it does - it's a much simpler option than Typescript. But if Typescript is used, PropTypes
+            will be completely obsolete.
+          </li>
+        </ul>
+      </p>
+      <h5 id="redux">Redux</h5>
+      <p>
+        Redux is a very useful library for big applications to keep some shared global state. However, whenever a component is connected to Redux,
+        it absolutely kills any Reusability. A connected component is tightly coupled with the particular Redux store that it expects prop from,
+        as well as any action creators it tries to make use of.<br>
+        As such, Redux should only be connected to components that are not intended to be reusable - which is usually the root component of an app.
+        Reusable components should be passed any data they need as regular props, from the root.<br>
+      </p>
+      <h3>Component Structure</h3>
+      <h5 id="prefer-small">Prefer Small Components</h5>
+      <p>
+        When developing, it is super easy to get carried away and get great idea after great idea - which will promptly get implemented.
+        While this is not necessarily a bad thing on its own, it can very easily lead to big, monolithic components that either cannot be moved,
+        or requires an equal amount of time to refactor into a more mobile version.<br>
+        With this in mind, it should be a goal to keep components small, with only a few (if any) pieces of state to keep track of.
+        In React, composition is king, so having small composable components that can be 'plugged in' to solve more complicated tasks,
+        should be the goal whenever an app/component is being worked on.<br>
+      </p>
+      <h5 id="prefer-generic">Make Generic Components</h5>
+      <p>
+        By Generic, what is meant is particularly in regards to naming.<br>
+        As we all know, naming variables in a semantic way can be hard, and certainly, doing it in a semantic & generic way is even harder.
+        But the goal should always be to provide generic variable & function names in reusable components. <br>
+        A "RangeSlider" component should not have any references to "price", even though that is most likely what it will be used for in most cases.
+        As soon as a "price" is mentioned inside the component, it loses semantic reusability, although it might still 'work fine'.<br>
+        Developers of the future will thank you for generic naming when they need to leverage the component for some other task.<br>
+        This could potentially be taken even further by having some naming-conventions for often-used props. Such as 'value', 'onSomeEventChange',
+        'callback', 'label', etc.<br>
+        By example, a Dropdown component could take a 'value', a 'label' and an 'onValueChange' function.<br>
+        A Checkbox could take the same, 'value', 'label', 'onValueChange'.<br>
+        Developers would then be able to logically tell what props to pass into most components.<br>
+      </p>
+      <h5 id="typography-components">Typography Components</h5>
+      <p>
+        Typography components is the idea of having very simple 'wrapper' components that only apply some style around the children passed into it.
+        Obvious use-cases would be for grid of items, the Grid typographic components holding the styling to line a list of items up in a grid.
+        Or a Box component that provides some very specific width & height styling for the component being wrapped.<br>
+        By extension, a reusable components root container should not declare any of the following styles:<br>
+        margin,<br>
+        width,<br>
+        position,<br>
+        top,<br>
+        left,<br>
+        right,<br>
+        bottom,<br>
+        transform,<br>
+        display<br>
+        As doing so pretty much destroys reusability - the component can no longer be 'put anywhere', but only 'put where the styling fits'.<br>
+        Instead they can be wrapped by a typographic component that decides what size & position the component should have in the given context.<br>
+      </p>
+      <h3>CSS & Styling</h3>
+      <h5 id="global-styles">Global Styles</h5>
+      <p>
+        Global styling is not a bad thing at all on static websites that are never meant to change. However, on a dynamic site that keeps
+        evolving, renewing and implementing new features, it can be an absolute disaster. There is nothing worse than fighting some
+        global styling when building a component, trying to beat the global stylings specificity or even adding !important.<br>
+        As such, global styling should be kept to the bare minimum:<br>
+        Browser normalizing (removing default body margin etc.)<br>
+        Box sizing<br>
+        Fonts<br>
+        Anything else will most likely end up conflicting with something, at some point, and it can also end up being quite a quest
+        for a developer to attempt to clean up or refactor a bunch of global styling that could be potentially be used anywhere on the whole site.<br>
+      </p>
+      <h5 id="styleguide">Styleguide</h5>
+      <p>
+        While a 'regular' styleguide is mostly unnecessary when working with reusable components, it still holds value particularly for
+        colors and perhaps font-sizing, laying out some css variables denoting which colors are used throughout the site (the 'brand coloring'),
+        and which font-sizes (preferably in em) are to be used for common texts (titles, subtitles, bodytext, labels, errors, notes, etc.).<br>
+        So by a stylguide, what is meant here is actually a _variables.scss sheet containing valid colors & font-sizes to be used on the site.<br>
+      </p>
+      <h5 id="wrappers">Wrappers</h5>
+      <p>
+        This is very related to Typography Components mentioned previously, so this is mostly to re-iterate:<br>
+        Do not declare contextual styling on root elements in components, instead make use of a Typography components or,
+        if it doesn't make sense to have a reusable typography component for this particular case, just make a wrapper element
+        with the positioning styling you will need in this particular case.<br>
+        As such, wrappers are essentially one-off Typography components.<br>
+      </p>
+      <h5 id="scoping">SCSS Scoping</h5>
+      <p>
+        If using regular scss (or less) - and not CSS Modules or Styled Components - manual scoping is extremely important.<br>
+        Any component-level scss should be nested inside a root selector (which should be as unique as possible), to avoid
+        styling interfering with other parts of the site/other components. This rule should not be broken.<br>
+      </p>
+      <h5 id="mixins">Mixins</h5>
+      <p>
+        <a href="http://www.sass-lang.com/documentation/at-rules/mixin">Mixins</a> are to css what Reusable Components are to React.<br>
+        They allow us to write a set of rules intended for specific use-cases - like a button, a list, an input element, etc.
+        You can even provide arguments to allow for a degree of customization to a given mixin, such a setting a color.<br>
+        Mixins need a bit of love to go with CSS Modules, though. But as luck would have it, there is a webpack loader for that!:<br>
+        <a href="https://github.com/shakacode/sass-resources-loader">SASS Resources Loader</a><br>
+      </p>
+      <h5 id="modules">CSS Modules & Styled Components</h5>
+      <p>
+        There (at least) 2 good options for writing CSS for Reusable React Components, which removes the scoping-issues of
+        regular scss/less:
+        <ul>
+          <li>
+            <a href="https://github.com/css-modules/css-modules">CSS Modules</a>
+            CSS Modules are a way to provide guaranteed component-level scoping and makes
+            classes available as variables inside the component. This allows for nicer syntax
+            when having conditional classes (particularly in combination with the classNames package).
+          </li>
+          <li>
+            <a href="https://styled-components.com/">Styled Components</a>
+            Styled Components moves styling completely into JS, removing the need for stylesheets,
+            using tagged templates <div>(fancy <span class="code-block">func`cool template ${literal}`</span> syntax)</div>
+            The idea is quite intriguing!
+          </li>
+        </ul>
+      </p>
+      <h5 id="classnames">classNames Package</h5>
+      <p>
+        <a href="https://github.com/JedWatson/classnames">classNames</a> is a small npm package
+        that allows for easily dynamically composing classNames of an element, rather than
+        the horrible template string interpolation or slightly less-horrible array.join(' ') solutions.<br>
+        There are some very interesting synergies with this and CSS Modules, allowing you to do a single
+        classNames composition on the root element of a component, including all modifier classes.
+        Then in the CSS module, save the root element to global variable and access inside the child
+        element classes, adding any modifiers:
+        <div class="code-block">
+          render() {<br>
+          &nbsp;&nbsp;const { className } = this.props;<br>
+          <br>
+          &nbsp;&nbsp;const rootClass = classnames({<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;[styles.mycomponent]: true,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;[styles.mycomponentBig]: ifBig, // Make modifier more general<br>
+          &nbsp;&nbsp;}, className)<br>
+          <br>
+          &nbsp;&nbsp;return (<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&lt;div className={rootClass}&gt;<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;h2 className={styles.headline}>Headline&lt;/h2&gt;<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;<br>
+          &nbsp;&nbsp;)<br>
+          }<br>
+        </div>
+        <div class="code-block">
+          .mycomponent {<br>
+          &nbsp;&nbsp;// root styling<br>
+          &nbsp;&nbsp;&Big {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;$big: & !global; // Save selector (.mycomponentBig) in variable<br>
+          &nbsp;&nbsp;}<br>
+          }<br>
+          <br>
+          .headline {<br>
+          &nbsp;&nbsp;font-size: 14px;<br>
+          <br>
+          &nbsp;&nbsp;#{$big} & {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;// Use variable to create selector (.mycomponentBig .headline)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;font-size: 20px;<br>
+          &nbsp;&nbsp;}<br>
+          }<br>
+        </div>
+      </p>
+      <h3 id="common-components">Common Reusable Components</h3>
+      <p>
+        The following is a list of ideas of reusable components that will find a place on just about any
+        ecommerce (or similar) website. It includes proposals for props & state and compositional nature,
+        although it certainly might need some additions for the particular company requirements.<br>
+      </p>
+      <h5 id="loader">Loader</h5>
+      <p>
+        Loaders are an integral part of any website making use of ajax (or even just async) requests/JS.<br>
+        A reusable loader is quite simple to do - avoid positioning styling and pass in customizable options as props.<br>
+        Props: color, classNames<br>
+        Optional className-based styling: on-button, on-container, on-input, full-screen. These could instead be created as
+        Typography components that would style any children (not just a loader) in relation to being on a button, in a container, etc.<br>
+      </p>
+      <h5 id="dropdown">Dropdown</h5>
+      <p>
+        The HTML select & option elements are not very open to styling, and as such, it's often required to re-implement a select-functionality
+        from scratch. When doing so, it's a prime opportunity to allow for more options than a select usually allows, like having pictures in each option
+        (for example, a list of emojis, a list of avatars).<br>
+        Props: options, selected, onSelectionChange<br>
+        Children or options?: There is a few different ways to pass in the list of option elements to the dropdown - either as children, as a list of objects,
+        a list of components or a list of functions. For most cases a list of objects will suffice, but for further reusability, it might make sense to pass
+        in a list of option components, instead. This would make it easy to switch out one type of option components for another on a case-by-case basis.<br>
+      </p>
+      <h5 id="accordion">Accordion</h5>
+      <p>
+        An accordion usually simply displays information in an accordion-fashion. As such, it won't need to communicate any state to parents, and only
+        needs a bit of state to be functional. The accordion options are very similar to what was discussed in the Dropdown (above).<br>
+        State: activeIndex<br>
+        Props: options<br>
+      </p>
+      <h5 id="search">Search</h5>
+      <p>
+        A search usually contains a fair amount of logic, especially if it includes a preview of search results (which could, and perhaps should, be a
+        separate component). It also contains a text input element that should also be a separate reusable component.<br>
+        Search itself is then a composition of the text input, the result preview (list) and the actual search logic - which is a prime candidate for a custom hook.<br>
+        The end results shold be a search component that is actually quite lean, has individually reusable components and can itself be placed anywhere.<br>
+        The search could potentially accept a callback to send any results to the parent for processing.<br>
+        Also worth considering if it should accept an optional submit button.<br>
+        State: searchTerm, results<br>
+        Props: endpoint, callback?, button?<br>
+        Notes: as with any typing-based request functionality, searching should be throttled to avoid request-overload.<br>
+      </p>
+      <h5 id="collapsible">Collapsible</h5>
+      <p>
+        A Collapsible component accepts children (either as actual children or a custom prop) and hides/shows them when interacted with.<br>
+        It should certainly take a component to hide/show, but perhaps also one for customization the look of 'head' of the Collapsible - 
+        the part that is shown always, but when the child is hidden & shown.<br>
+        By having this Head-component, the Collapsible actually doesn't have any visible html on it's own - 
+        it's just a wrapper with a piece of state for hiding/showing the contents.<br>
+        State: showing<br>
+        Props: Content/children, Head<br>
+      </p>
+      <h5 id="range-slider">Range Slider</h5>
+      <p>
+        I am not proposing to create a RangeSlider from scratch - that's a lot of work. But having a reusable wrapper component for a RangeSlider package,
+        such as <a href="https://www.npmjs.com/package/rc-slider">rc-slider</a>, is quite valuable.<br>
+        The wrapper keeps track of the current value(s) chosen, and passes any customizations down through props.<br>
+        It's very important to avoid the pitfall of thinking "price" when building a slider like this - as admittedly, for ecommerce, sliders like this
+        are more often than not used as price sliders. But it should be usable for any purpose involving filtering based on numbers.<br>
+        State: values<br>
+        Props: callback, any changeable slider-implementation specific props<br>
+      </p>
+      <h5 id="card">Box / Card</h5>
+      <p>
+        This is a sort of generic name for a component. The main idea is that any ecommerce company needs a "Product", "Listing", or any component variation thereof.<br>
+        These Box components might be composed of several child components, each responsible for a particular part (showing prices, showing descriptions, etc.), such
+        that it will be easy to provide / remove functionality down the road, but keep the component itself sturdy.<br>
+        These components should have no trouble being placed in grids, sliders, lists, or any other variation of product display thinkable.<br>
+        Exactly what functionality & props are required will be very company-dependent.<br>
+        State: ideally none<br>
+        Props: product, ???<br>
+      </p>
+      <h5 id="checkbox">Checkbox</h5>
+      <p>
+        Similarly to the Dropdown discussed earlier, html checkboxes are not very styling-friendly, so it's often necessary to create a company-compliant checkbox
+        from scratch. Functionality-wise, a checkbox is quite simple, as it should just communicate the checked state to the parent for further processing.<br>
+        State: checked<br>
+        Props: callback, label<br>
+      </p>
+      <h5 id="carousel">Carousel</h5>
+      <p>
+        Carousels/Sliders are quite common on ecommerce websites, as it's a concise way of potentially showing a lot of products - although it's arguable how many people
+        actually bother sliding trough them.<br>
+        Nevertheless, having a Carousel component (wrapping some 3rd party package, such as <a href="https://www.npmjs.com/package/react-slick">React Slick</a>) can be a useful thing. This component should be as lean as possible, preferably with only sliding-relevant logic.<br>
+        Any additional logic should be kept in the children rendered by the Carousels (such as the Box component described above).<br>
+        State: Any 3rd party package-required state<br>
+        Props: children<br>
+      </p>
+      <h5 id="image">Image</h5>
+      <p>
+        It might initially seem like overkill to have a component for an image, but actually, images require a fair amount of considerations.<br>
+        Such as, what is the pre-load content? A loader? A low-res version of the actual image? And what should happen when the image is loaded?
+        How many different versions of the same image is required (for responsive design)? And what about lazy-loading? Is it square or round?
+        An Image component should provide an answer for all these questions.<br>
+        Props: image, any changeable options<br>
+      </p>
+      <h5 id="avatar">Avatar</h5>
+      <p>
+        An Avatar component is especially useful is customers have a login, but even if not, it can be used for employees doing blog posts or similar.<br>
+        It should probably make use of the Image component discussed above, and then take some additional information pertaining to the represented individual.<br>
+        As such, it's a quite simple component without any state of it's own.<br>
+        Props: image, info<br>
+      </p>
+      <h5 id="chart">Chart</h5>
+      <p>
+        Reusable Chart components are perhaps not the most immediately useful - but if the company intends to show progress over time in some area, like price fluctuations,
+        having a wrapper around a 3rd party library like <a href="https://www.npmjs.com/package/recharts">Recharts</a> is very useful.<br>
+        It could be necessary to have a component for each variation of Chart, to avoid having a giant Chart component, but the parent Chart component
+        could simply lazily load the requested chart using React.lazy with Suspense, to avoid having all Chart component loaded in every case.<br>
+        State: if any, should be defined in the individual Chart components<br>
+        Props: chart, any props to customize charts<br>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

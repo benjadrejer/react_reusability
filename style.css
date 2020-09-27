@@ -1,0 +1,39 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 5px;
+  font-family: 'Share Tech Mono', sans-serif;
+  background-color: #BDC581;
+}
+
+.reusability-guide {
+  max-width: 1024px;
+  margin: auto;
+}
+
+h1 {
+  margin: 0;
+  padding: 15px 0;
+}
+
+a {
+  padding: 2px 0;
+  display: inline-block;
+}
+
+a, a:active, a:visited, a:link {
+  color: black;
+}
+
+a:hover {
+  color: #2d3436;
+}
+
+.code-block {
+  background-color: black;
+  color: white;
+}
